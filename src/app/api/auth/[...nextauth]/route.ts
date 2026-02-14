@@ -14,49 +14,71 @@ const handler = NextAuth({
         }),
     ],
     callbacks: {
-        async signIn({ user, account, profile }) {
-            // Send user data to backend to create/update user
+        async signIn({ user, account }) {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/oauth`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: user.email,
-                        name: user.name,
-                        avatar: user.image,
-                        provider: account?.provider,
-                        provider_id: account?.providerAccountId,
-                    }),
-                });
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/auth/token`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: user.email,
+                            name: user.name,
+                            avatar_url: user.image,
+                            provider: account?.provider,
+                            provider_id: account?.providerAccountId,
+                        }),
+                    }
+                );
 
                 if (response.ok) {
-                    const userData = await response.json();
-                    user.id = userData.id;
-                    user.role = userData.role;
+                    const data = await response.json();
+
+                    user.id = data.user.id;
+                    user.role = data.user.role as 'admin' | 'annotator' | 'reviewer';
+                    // @ts-ignore
+                    user.backendToken = data.access_token;
+
                     return true;
                 }
+
+                console.error('Backend token generation failed:', response.status);
+                return false;
             } catch (error) {
-                console.error('Error creating user:', error);
+                console.error('Error during sign in:', error);
+                return false;
             }
-            return true;
         },
-        async jwt({ token, user, account }) {
+
+        async jwt({ token, user }) {
+            // On initial sign in, user object is available
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
+                // @ts-ignore
+                token.backendToken = user.backendToken;
             }
             return token;
         },
+
         async session({ session, token }) {
+            // Add custom fields to session
             if (session.user) {
                 session.user.id = token.id as string;
-                session.user.role = token.role as string;
+                session.user.role = token.role as 'admin' | 'annotator' | 'reviewer';
+                // @ts-ignore
+                session.backendToken = token.backendToken as string;
             }
             return session;
         },
     },
     pages: {
         signIn: '/login',
+        error: '/login',
+    },
+    session: {
+        strategy: 'jwt',
+        maxAge: 30 * 60,
     },
     secret: process.env.NEXTAUTH_SECRET,
 });
