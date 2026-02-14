@@ -17,7 +17,7 @@ const handler = NextAuth({
         async signIn({ user, account }) {
             try {
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/auth/token`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/token`,
                     {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
