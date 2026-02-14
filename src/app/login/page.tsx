@@ -2,13 +2,13 @@
 
 import { signIn } from 'next-auth/react';
 import { Github, Loader2, AlertCircle, Layers } from 'lucide-react';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export default function Login() {
+function LoginForm() {
     const [isLoading, setIsLoading] = useState<'google' | 'github' | null>(null);
     const searchParams = useSearchParams();
     const error = searchParams.get('error');
@@ -44,6 +44,7 @@ export default function Login() {
             EmailSignin: 'Check your email address',
             CredentialsSignin: 'Sign in failed. Check your credentials.',
             SessionRequired: 'Please sign in to access this page',
+            AccessDenied: 'Access denied. Please try again.',
         };
         return errorMessages[errorCode] || 'An error occurred during sign in';
     };
@@ -160,5 +161,17 @@ export default function Login() {
                 </CardFooter>
             </Card>
         </div>
+    );
+}
+
+export default function Login() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-gradient-dark">
+                <Loader2 className="w-12 h-12 animate-spin text-primary" />
+            </div>
+        }>
+            <LoginForm />
+        </Suspense>
     );
 }
