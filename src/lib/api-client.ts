@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import { getSession, signOut } from 'next-auth/react';
+import { getSession } from 'next-auth/react';
 
 // Create axios instance
 const apiClient = axios.create({
@@ -45,8 +45,9 @@ apiClient.interceptors.response.use(
             if (status === 401) {
                 console.error('Unauthorized - Token expired or invalid');
 
-                // Sign out user and redirect to login
-                await signOut({ callbackUrl: '/login' });
+                if (typeof window !== 'undefined') {
+                    window.location.href = '/';
+                }
 
                 return Promise.reject({
                     message: 'Your session has expired. Please sign in again.',
