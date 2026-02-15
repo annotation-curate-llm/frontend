@@ -48,7 +48,7 @@ export default function Hero() {
 
                     {/* CTA Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-                        <Link href="/signup">
+                        <Link href="/login">
                             <Button size="lg" className="bg-gradient-orange hover:shadow-glow-orange w-full sm:w-auto">
                                 Get Started Free
                             </Button>
