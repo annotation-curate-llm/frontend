@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     useEffect(() => {
         // Redirect to login if not authenticated
         if (status === 'unauthenticated') {
-            router.push('/login');
+            router.push('/');
         }
 
         // Check role-based access
