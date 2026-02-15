@@ -1,9 +1,9 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { Github, Loader2, AlertCircle, Layers } from 'lucide-react';
-import { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, Suspense, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -11,7 +11,16 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 function LoginForm() {
     const [isLoading, setIsLoading] = useState<'google' | 'github' | null>(null);
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const { data: session, status } = useSession();
     const error = searchParams.get('error');
+
+    // Redirect authenticated users to dashboard
+    useEffect(() => {
+        if (status === 'authenticated') {
+            router.push('/dashboard');
+        }
+    }, [status, router]);
 
     const handleGoogleSignIn = async () => {
         try {
@@ -49,6 +58,20 @@ function LoginForm() {
         return errorMessages[errorCode] || 'An error occurred during sign in';
     };
 
+    // Show loading while checking authentication status
+    if (status === 'loading') {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-dark">
+                <Loader2 className="w-12 h-12 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    // Don't render login form if already authenticated (will redirect)
+    if (status === 'authenticated') {
+        return null;
+    }
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-dark relative overflow-hidden p-4">
             {/* Subtle orange radial glow behind card */}
@@ -75,10 +98,10 @@ function LoginForm() {
                     {/* Heading */}
                     <div className="text-center space-y-2">
                         <CardTitle className="text-2xl font-semibold tracking-tight">
-                            Welcome Back
+                            Welcome to <span className="text-gradient-orange-deep">Curate-LLM</span>
                         </CardTitle>
                         <CardDescription className="text-text-secondary">
-                            Sign in to continue to your workspace
+                            Sign in to start annotating
                         </CardDescription>
                     </div>
                 </CardHeader>
