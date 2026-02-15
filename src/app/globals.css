@@ -228,6 +228,38 @@
 
 /* Utility classes for custom values */
 @layer utilities {
+
+  .text-gradient-orange {
+    background: linear-gradient(135deg, #ff5722 0%, #ff8a65 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Orange to deep orange gradient */
+  .text-gradient-orange-deep {
+    background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Light to primary orange */
+  .text-gradient-orange-light {
+    background: linear-gradient(135deg, #ff8a65 0%, #ff5722 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Full spectrum orange gradient */
+  .text-gradient-orange-full {
+    background: linear-gradient(135deg, #ffab91 0%, #ff5722 50%, #e64a19 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
   .shadow-glow-orange {
     box-shadow: 0 0 20px rgba(255, 87, 34, 0.3);
   }
