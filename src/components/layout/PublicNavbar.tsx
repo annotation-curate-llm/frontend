@@ -42,10 +42,7 @@ export default function PublicNavbar() {
 
                 {/* Right Side Buttons */}
                 <div className="flex items-center gap-2">
-                    <NavbarButton variant="secondary" href="/login">
-                        Login
-                    </NavbarButton>
-                    <NavbarButton className="bg-gradient-orange text-white" href="/signup">
+                    <NavbarButton className="bg-gradient-orange text-white" href="/login">
                         Get Started
                     </NavbarButton>
                 </div>
@@ -82,10 +79,7 @@ export default function PublicNavbar() {
                         </Link>
                     ))}
                     <div className="flex flex-col gap-2 pt-4 w-full">
-                        <NavbarButton variant="secondary" href="/login" className="w-full">
-                            Login
-                        </NavbarButton>
-                        <NavbarButton variant="gradient" href="/signup" className="w-full ">
+                        <NavbarButton className="bg-gradient-orange text-white" href="/login">
                             Get Started
                         </NavbarButton>
                     </div>

@@ -59,10 +59,9 @@ export default function CTA() {
 
                                 {/* CTA Buttons */}
                                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                                    <Link href="/signup">
+                                    <Link href="/login">
                                         <Button size="lg" className="bg-gradient-orange hover:shadow-glow-orange-strong w-full sm:w-auto px-8">
                                             Get Started Free
-                                            <ArrowRight className="ml-2 w-4 h-4" />
                                         </Button>
                                     </Link>
                                     <Link href="/demo">
