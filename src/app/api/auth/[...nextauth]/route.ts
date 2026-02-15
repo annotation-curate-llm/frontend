@@ -71,6 +71,19 @@ const handler = NextAuth({
             }
             return session;
         },
+
+        // ADD THIS: Redirect callback to control where users go after sign in
+        async redirect({ url, baseUrl }) {
+            // If the url is trying to go to /login after successful auth, redirect to dashboard
+            if (url === `${baseUrl}/login` || url === baseUrl) {
+                return `${baseUrl}/dashboard`;
+            }
+            // Allows relative callback URLs
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            // Allows callback URLs on the same origin
+            else if (new URL(url).origin === baseUrl) return url;
+            return baseUrl;
+        },
     },
     pages: {
         signIn: '/login',

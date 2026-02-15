@@ -17,10 +17,9 @@ export default function Home() {
     if (status === 'authenticated') {
       router.push('/dashboard');
     }
-    // Unauthenticated users stay on landing page - no redirect!
+
   }, [status, router]);
 
-  // Show landing page for everyone (authenticated users will be redirected)
   return (
     <>
       <Hero />
