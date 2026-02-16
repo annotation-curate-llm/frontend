@@ -1,12 +1,21 @@
-import { User } from "./user";
-import { Project } from "./project";
+import { Asset } from './asset';
+import { Project } from './project';
+import { User } from './user';
+
+export enum TaskStatus {
+    UNASSIGNED = 'unassigned',
+    ASSIGNED = 'assigned',
+    IN_PROGRESS = 'in_progress',
+    COMPLETED = 'completed',
+    REVIEWED = 'reviewed',
+}
 
 export interface Task {
     id: string;
     asset_id: string;
     project_id: string;
-    assigned_to?: string;
-    status: 'unassigned' | 'assigned' | 'in_progress' | 'completed' | 'reviewed';
+    assigned_to?: string | null;
+    status: TaskStatus;
     label_studio_task_id?: number;
     priority: number;
     assigned_at?: string;
@@ -14,16 +23,40 @@ export interface Task {
     completed_at?: string;
     created_at: string;
     updated_at: string;
-    // Populated fields
+    // Populated fields (from relationships)
     asset?: Asset;
     project?: Project;
     assignee?: User;
 }
 
-export interface Asset {
-    id: string;
-    file_name: string;
-    file_url: string;
-    mime_type: string;
-    file_size: number;
+export interface TaskCreate {
+    project_id: string;
+    asset_id: string;
+    priority?: number;
+}
+
+export interface TaskUpdate {
+    status?: TaskStatus;
+    priority?: number;
+    assigned_to?: string;
+}
+
+export interface TaskAssign {
+    project_id: string;
+    user_id: string;
+    count: number;
+}
+
+export interface TaskAutoAssign {
+    project_id: string;
+    tasks_per_user?: number;
+}
+
+export interface TaskBulkUpdateStatus {
+    task_ids: string[];
+    new_status: TaskStatus;
+}
+
+export interface MyTask extends Task {
+    asset: Asset;
 }
