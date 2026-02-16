@@ -93,11 +93,7 @@ const adminNavigation: NavSection[] = [
                 href: '/dashboard/users',
                 icon: Users,
             },
-            {
-                title: 'Roles',
-                href: '/dashboard/users/roles',
-                icon: UserCog,
-            },
+
         ],
     },
     {

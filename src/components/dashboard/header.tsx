@@ -102,10 +102,10 @@ export function Header({ user, notificationCount = 0, onSignOut }: HeaderProps) 
                         className="flex items-center gap-3 shrink-0 group"
                     >
                         <div className="w-10 h-10 rounded-xl bg-gradient-orange flex items-center justify-center shadow-glow-orange">
-                            <span className="text-white font-bold text-lg">A</span>
+                            <span className="text-white font-bold text-lg">💀</span>
                         </div>
                         <span className="text-lg font-semibold text-text-primary hidden lg:block group-hover:text-primary transition-colors">
-                            Annotate
+                            Curate-LLM
                         </span>
                     </Link>
 
