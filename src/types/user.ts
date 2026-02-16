@@ -10,6 +10,7 @@ export interface User {
     name: string;
     avatar_url?: string;
     provider: string;
+    provider_id: string;
     role: UserRole;
     is_active: boolean;
     created_at: string;
@@ -29,6 +30,7 @@ export interface UserUpdate {
     name?: string;
     avatar_url?: string;
     role?: UserRole;
+    is_active?: boolean;
 }
 
 export interface BackendTokenResponse {
