@@ -18,7 +18,7 @@ export default function PublicNavbar() {
 
     const navItems = [
         { name: "Features", link: "/features" },
-        { name: "Pricing", link: "/pricing" },
+        { name: "Dashboard", link: "/dashboard" },
         { name: "About", link: "/about" },
     ];
 
