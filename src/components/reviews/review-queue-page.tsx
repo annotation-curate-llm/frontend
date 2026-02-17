@@ -2,12 +2,10 @@
 
 import { useState } from 'react';
 import { CheckCircle2, XCircle, Loader2, MessageSquare, ExternalLink, Eye } from 'lucide-react';
-import { usePendingReviews, useCreateReview } from '../tasks/use-reviews';
+import { usePendingReviews, useCreateReview } from '@/hooks/use-reviews';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { ReviewWithDetails } from '@/types/review';
-
 import {
     Dialog,
     DialogContent,
@@ -16,18 +14,18 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { ReviewStatus } from '@/types/review';
+import { ReviewStatus, ReviewWithDetails } from '@/types/review';
 import { formatDistanceToNow } from 'date-fns';
 
 export function ReviewQueuePage() {
-    const [selectedReview, setSelectedReview] = useState<any>(null);
+    const [selectedReview, setSelectedReview] = useState<ReviewWithDetails | null>(null);
     const [comments, setComments] = useState('');
     const [reviewAction, setReviewAction] = useState<ReviewStatus | null>(null);
 
     const { data: reviews, isLoading, error } = usePendingReviews();
     const createReview = useCreateReview();
 
-    const handleReview = (review: any, action: ReviewStatus) => {
+    const handleReview = (review: ReviewWithDetails, action: ReviewStatus) => {
         setSelectedReview(review);
         setReviewAction(action);
         setComments('');
@@ -128,7 +126,7 @@ export function ReviewQueuePage() {
                                             size="sm"
                                             onClick={() =>
                                                 window.open(
-                                                    `http://localhost:8080/tasks/${review.task_id}`,
+                                                    `${process.env.NEXT_PUBLIC_LABEL_STUDIO_URL || 'http://localhost:8080'}/tasks/${review.task_id}`,
                                                     '_blank'
                                                 )
                                             }

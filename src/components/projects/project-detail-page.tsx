@@ -140,7 +140,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                                 variant="outline"
                                 onClick={() =>
                                     window.open(
-                                        `http://localhost:8080/projects/${project.label_studio_project_id}`,
+                                        `${process.env.NEXT_PUBLIC_LABEL_STUDIO_URL || 'http://localhost:8080'}/projects/${project.label_studio_project_id}`,
                                         '_blank'
                                     )
                                 }
