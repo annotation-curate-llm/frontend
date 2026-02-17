@@ -55,7 +55,6 @@ const handler = NextAuth({
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
-                // @ts-ignore
                 token.backendToken = user.backendToken;
             }
             return token;
@@ -72,15 +71,11 @@ const handler = NextAuth({
             return session;
         },
 
-        // ADD THIS: Redirect callback to control where users go after sign in
         async redirect({ url, baseUrl }) {
-            // If the url is trying to go to /login after successful auth, redirect to dashboard
             if (url === `${baseUrl}/login` || url === baseUrl) {
                 return `${baseUrl}/dashboard`;
             }
-            // Allows relative callback URLs
             if (url.startsWith("/")) return `${baseUrl}${url}`;
-            // Allows callback URLs on the same origin
             else if (new URL(url).origin === baseUrl) return url;
             return baseUrl;
         },
@@ -91,7 +86,10 @@ const handler = NextAuth({
     },
     session: {
         strategy: 'jwt',
-        maxAge: 30 * 60,
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+    },
+    jwt: {
+        maxAge: 7 * 24 * 60 * 60, // 7 days
     },
     secret: process.env.NEXTAUTH_SECRET,
 });

@@ -119,11 +119,6 @@ const adminNavigation: NavSection[] = [
                 href: '/dashboard/exports',
                 icon: Upload,
             },
-            {
-                title: 'Export History',
-                href: '/dashboard/exports/history',
-                icon: ScrollText,
-            },
         ],
     },
     {

@@ -108,7 +108,7 @@ export function ExportDataPage() {
                                     {selectedProject ? selectedProject.name : 'Choose a project...'}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-full">
+                            <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
                                 {projects?.map((project) => (
                                     <DropdownMenuItem
                                         key={project.id}
@@ -135,7 +135,7 @@ export function ExportDataPage() {
                                     {FORMAT_INFO[selectedFormat].label}
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-full">
+                            <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
                                 <DropdownMenuLabel>Select Format</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 {Object.entries(FORMAT_INFO).map(([format, info]) => {
