@@ -98,7 +98,7 @@ export function Header({ user, notificationCount = 0, onSignOut }: HeaderProps) 
 
                     {/* Logo */}
                     <Link
-                        href="/dashboard"
+                        href="/"
                         className="flex items-center gap-3 shrink-0 group"
                     >
                         <div className="w-10 h-10 rounded-xl bg-gradient-orange flex items-center justify-center shadow-glow-orange">

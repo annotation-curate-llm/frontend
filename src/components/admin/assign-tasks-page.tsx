@@ -95,7 +95,7 @@ export function AssignTasksPage() {
                             {selectedProject ? selectedProject.name : 'Choose a project...'}
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-full">
+                    <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
                         {projects?.map((project) => (
                             <DropdownMenuItem
                                 key={project.id}
@@ -275,7 +275,7 @@ export function AssignTasksPage() {
                                             : 'Choose annotator...'}
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-full">
+                                <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
                                     {annotators.map((user) => (
                                         <DropdownMenuItem
                                             key={user.id}
