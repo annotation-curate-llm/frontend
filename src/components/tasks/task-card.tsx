@@ -58,7 +58,7 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
                         <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(`http://localhost:8080/projects/${task.project?.label_studio_project_id}/data?task=${task.label_studio_task_id}`, '_blank')}
+                            onClick={() => window.open(`${process.env.NEXT_PUBLIC_LABEL_STUDIO_URL || 'http://localhost:8080'}/projects/${task.project?.label_studio_project_id}/data?task=${task.label_studio_task_id}`, '_blank')}
                         >
                             <ExternalLink className="w-3 h-3 mr-1" />
                             Open LS
