@@ -1,19 +1,30 @@
 'use client';
 
-import { Task } from '@/types/task';
+import { MyTask, TaskStatus } from '@/types/task';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, User, Calendar } from 'lucide-react';
+import { ExternalLink, Calendar } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface TaskCardProps {
-    task: Task;
+    task: MyTask;
     onStart?: (taskId: string) => void;
 }
 
 export function TaskCard({ task, onStart }: TaskCardProps) {
+
+    const getLabelStudioUrl = () => {
+        const baseUrl = process.env.NEXT_PUBLIC_LABEL_STUDIO_URL || 'http://localhost:8080';
+        // Use task's own label_studio_task_id — project id comes from task.label_studio_project_id
+        // open the task directly via task id
+        return `${baseUrl}/tasks/${task.label_studio_task_id}/labeling`;
+    };
+
     const handleStart = () => {
-        onStart?.(task.id);
+        onStart?.(task.id); // updates status to in_progress
+        if (task.label_studio_task_id) {
+            window.open(getLabelStudioUrl(), '_blank');
+        }
     };
 
     return (
@@ -30,44 +41,48 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
                         )}
                     </div>
 
-                    {task.asset && (
-                        <h4 className="text-sm font-medium text-text-primary mb-1 truncate">
-                            {task.asset.file_name}
-                        </h4>
-                    )}
+                    <h4 className="text-sm font-medium text-text-primary mb-1 truncate">
+                        {task.asset.file_name}
+                    </h4>
 
                     <div className="flex items-center gap-4 text-xs text-text-tertiary">
-                        {task.assignee && (
-                            <div className="flex items-center gap-1">
-                                <User className="w-3 h-3" />
-                                <span>{task.assignee.name}</span>
-                            </div>
-                        )}
                         <div className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             <span>
-                                {task.created_at && formatDistanceToNow(new Date(task.created_at), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(task.created_at), { addSuffix: true })}
                             </span>
                         </div>
+                        {task.label_studio_task_id && (
+                            <span className="text-success">LS Task #{task.label_studio_task_id}</span>
+                        )}
                     </div>
                 </div>
 
                 {/* Right: Actions */}
                 <div className="flex items-center gap-2">
-                    {task.label_studio_task_id && (
+                    {/* Already in progress — just open LS */}
+                    {task.status === TaskStatus.IN_PROGRESS && task.label_studio_task_id && (
                         <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(`${process.env.NEXT_PUBLIC_LABEL_STUDIO_URL || 'http://localhost:8080'}/projects/${task.project?.label_studio_project_id}/data?task=${task.label_studio_task_id}`, '_blank')}
+                            onClick={() => window.open(getLabelStudioUrl(), '_blank')}
                         >
                             <ExternalLink className="w-3 h-3 mr-1" />
-                            Open LS
+                            Continue in Label Studio
                         </Button>
                     )}
-                    {task.status === 'assigned' && (
+
+                    {/* Assigned — start + open LS */}
+                    {task.status === TaskStatus.ASSIGNED && (
                         <Button size="sm" onClick={handleStart}>
-                            Start
+                            <ExternalLink className="w-3 h-3 mr-1" />
+                            {task.label_studio_task_id ? 'Start Annotating' : 'Start'}
                         </Button>
+                    )}
+
+                    {/* Completed */}
+                    {task.status === TaskStatus.COMPLETED && (
+                        <span className="text-xs text-success font-medium">✓ Completed</span>
                     )}
                 </div>
             </div>
