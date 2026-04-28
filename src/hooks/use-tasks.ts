@@ -5,7 +5,6 @@ import {
     TaskCreate,
     TaskUpdate,
     TaskAssign,
-    TaskAutoAssign,
     TaskBulkUpdateStatus,
     MyTask,
     TaskStatus
