@@ -12,6 +12,13 @@ import {
     Download,
     ExternalLink,
     Loader2,
+    Image,
+    ScanSearch,
+    Layers,
+    FileText,
+    Tag,
+    Music,
+    Folder,
 } from 'lucide-react';
 import { useProject, useDeleteProject } from '@/hooks/use-projects';
 import { useProjectTasks } from '@/hooks/use-tasks';
@@ -24,12 +31,22 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TaskStatus } from '@/types/task';
 import { cn } from '@/lib/utils';
+import type { ComponentType } from 'react';
 
 interface ProjectDetailPageProps {
     projectId: string;
 }
 
 type TabType = 'overview' | 'tasks' | 'settings';
+
+const CATEGORY_ICONS: Record<string, ComponentType<{ className?: string }>> = {
+    classification: Image,
+    object_detection: ScanSearch,
+    segmentation: Layers,
+    text_classification: FileText,
+    ner: Tag,
+    audio: Music,
+};
 
 export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
     const router = useRouter();
@@ -82,6 +99,10 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
         reviewed: tasks?.filter((t) => t.status === TaskStatus.REVIEWED).length || 0,
     };
 
+    const CategoryIcon = project.category
+        ? (CATEGORY_ICONS[project.category] ?? Folder)
+        : Folder;
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -95,15 +116,7 @@ export function ProjectDetailPage({ projectId }: ProjectDetailPageProps) {
                     <div className="flex items-start gap-4">
                         {/* Icon */}
                         <div className="w-16 h-16 bg-gradient-orange rounded-2xl flex items-center justify-center shadow-glow-orange">
-                            <span className="text-3xl">
-                                {project.category === 'classification' && '🖼️'}
-                                {project.category === 'object_detection' && '⬜'}
-                                {project.category === 'segmentation' && '🎨'}
-                                {project.category === 'text_classification' && '📝'}
-                                {project.category === 'ner' && '🏷️'}
-                                {project.category === 'audio' && '🎵'}
-                                {!project.category && '📁'}
-                            </span>
+                            <CategoryIcon className="w-8 h-8 text-white" />
                         </div>
 
                         {/* Info */}

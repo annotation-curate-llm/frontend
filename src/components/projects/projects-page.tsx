@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, SlidersHorizontal, Loader2, FolderOpen } from 'lucide-react';
+import { Search, Filter, SlidersHorizontal, Loader2, FolderOpen, Image, ScanSearch, Layers, FileText, Tag, Music } from 'lucide-react';
 import { useProjects } from '@/hooks/use-projects';
 import { ProjectCard } from '@/components/projects/project-card';
 import { CreateProjectModal } from '@/components/projects/create-project-modal';
@@ -16,8 +16,27 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { LabelConfigCategory } from '@/types/label-config';
+import type { ComponentType } from 'react';
 
 type SortOption = 'name' | 'date' | 'progress' | 'tasks';
+
+const CATEGORY_ICONS: Record<string, ComponentType<{ className?: string }>> = {
+    classification: Image,
+    object_detection: ScanSearch,
+    segmentation: Layers,
+    text_classification: FileText,
+    ner: Tag,
+    audio: Music,
+};
+
+const CATEGORY_OPTIONS: { value: LabelConfigCategory; label: string }[] = [
+    { value: 'classification', label: 'Image Classification' },
+    { value: 'object_detection', label: 'Object Detection' },
+    { value: 'segmentation', label: 'Segmentation' },
+    { value: 'text_classification', label: 'Text Classification' },
+    { value: 'ner', label: 'NER' },
+    { value: 'audio', label: 'Audio' },
+];
 
 export function ProjectsPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -26,16 +45,11 @@ export function ProjectsPage() {
 
     const { data: projects, isLoading, error } = useProjects();
 
-    // Filter and sort projects
     const filteredProjects = projects
         ?.filter((project) => {
-            // Search filter
             const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 project.description?.toLowerCase().includes(searchQuery.toLowerCase());
-
-            // Category filter
             const matchesCategory = categoryFilter === 'all' || project.category === categoryFilter;
-
             return matchesSearch && matchesCategory;
         })
         .sort((a, b) => {
@@ -106,33 +120,27 @@ export function ProjectsPage() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline">
                             <Filter className="w-4 h-4 mr-2" />
-                            {categoryFilter === 'all' ? 'All Categories' : categoryFilter.replace('_', ' ')}
+                            {categoryFilter === 'all'
+                                ? 'All Categories'
+                                : CATEGORY_OPTIONS.find((c) => c.value === categoryFilter)?.label ?? categoryFilter.replace('_', ' ')}
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuLabel>Filter by Category</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => setCategoryFilter('all')}>
+                            <FolderOpen className="w-4 h-4 mr-2" />
                             All Categories
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setCategoryFilter('classification')}>
-                            🖼️ Image Classification
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setCategoryFilter('object_detection')}>
-                            ⬜ Object Detection
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setCategoryFilter('segmentation')}>
-                            🎨 Segmentation
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setCategoryFilter('text_classification')}>
-                            📝 Text Classification
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setCategoryFilter('ner')}>
-                            🏷️ NER
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setCategoryFilter('audio')}>
-                            🎵 Audio
-                        </DropdownMenuItem>
+                        {CATEGORY_OPTIONS.map(({ value, label }) => {
+                            const Icon = CATEGORY_ICONS[value];
+                            return (
+                                <DropdownMenuItem key={value} onClick={() => setCategoryFilter(value)}>
+                                    <Icon className="w-4 h-4 mr-2" />
+                                    {label}
+                                </DropdownMenuItem>
+                            );
+                        })}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -147,18 +155,10 @@ export function ProjectsPage() {
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Sort by</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => setSortBy('date')}>
-                            Latest First
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSortBy('name')}>
-                            Name (A-Z)
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSortBy('progress')}>
-                            Progress
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSortBy('tasks')}>
-                            Task Count
-                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSortBy('date')}>Latest First</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSortBy('name')}>Name (A-Z)</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSortBy('progress')}>Progress</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSortBy('tasks')}>Task Count</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
@@ -171,15 +171,12 @@ export function ProjectsPage() {
                     ))}
                 </div>
             ) : (
-                // Empty State
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
                     <div className="w-16 h-16 bg-bg-tertiary rounded-2xl flex items-center justify-center mb-4">
                         <FolderOpen className="w-8 h-8 text-text-tertiary" />
                     </div>
                     <h3 className="text-lg font-semibold text-text-primary mb-2">
-                        {searchQuery || categoryFilter !== 'all'
-                            ? 'No projects found'
-                            : 'No projects yet'}
+                        {searchQuery || categoryFilter !== 'all' ? 'No projects found' : 'No projects yet'}
                     </h3>
                     <p className="text-text-secondary mb-6 max-w-md">
                         {searchQuery || categoryFilter !== 'all'
@@ -193,12 +190,8 @@ export function ProjectsPage() {
             {/* Stats Footer */}
             {filteredProjects && filteredProjects.length > 0 && (
                 <div className="flex items-center justify-between text-sm text-text-tertiary pt-4 border-t border-border-subtle">
-                    <span>
-                        Showing {filteredProjects.length} of {projects?.length || 0} projects
-                    </span>
-                    <span>
-                        Total tasks: {projects?.reduce((acc, p) => acc + (p.total_tasks || 0), 0) || 0}
-                    </span>
+                    <span>Showing {filteredProjects.length} of {projects?.length || 0} projects</span>
+                    <span>Total tasks: {projects?.reduce((acc, p) => acc + (p.total_tasks || 0), 0) || 0}</span>
                 </div>
             )}
         </div>
