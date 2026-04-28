@@ -104,15 +104,17 @@ export default function DashboardPage() {
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <button className="text-left bg-bg-secondary border border-border-subtle rounded-2xl p-6 hover:border-primary hover:shadow-card-hover transition-all group">
-                    <div className="w-12 h-12 bg-bg-tertiary rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
-                        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                    </div>
-                    <h3 className="text-lg font-semibold text-text-primary mb-2">Create New Task</h3>
-                    <p className="text-sm text-text-tertiary">Start a new annotation task</p>
-                </button>
+                {(session.user.role === 'admin' || session.user.role === 'reviewer') && (
+                    <button className="text-left bg-bg-secondary border border-border-subtle rounded-2xl p-6 hover:border-primary hover:shadow-card-hover transition-all group">
+                        <div className="w-12 h-12 bg-bg-tertiary rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+                            <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                        </div>
+                        <h3 className="text-lg font-semibold text-text-primary mb-2">Create New Task</h3>
+                        <p className="text-sm text-text-tertiary">Start a new annotation task</p>
+                    </button>
+                )}
 
                 <button className="text-left bg-bg-secondary border border-border-subtle rounded-2xl p-6 hover:border-primary hover:shadow-card-hover transition-all group">
                     <div className="w-12 h-12 bg-bg-tertiary rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
