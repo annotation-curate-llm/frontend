@@ -19,7 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 
 interface LabelConfigSelectorProps {
-    value?: string; // template id
+    value?: string;
     onChange: (template: LabelConfigTemplate) => void;
     className?: string;
 }
@@ -48,7 +48,6 @@ export function LabelConfigSelector({
         onChange(template);
     };
 
-    // Group templates by category
     const groupedTemplates = LABEL_CONFIG_TEMPLATES.reduce((acc, template) => {
         if (!acc[template.category]) {
             acc[template.category] = [];
@@ -65,13 +64,13 @@ export function LabelConfigSelector({
 
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button
-                        variant="outline"
-                        className="w-full justify-between"
-                    >
+                    <Button variant="outline" className="w-full justify-between">
                         {selectedTemplate ? (
                             <div className="flex items-center gap-2">
-                                <span className="text-lg">{selectedTemplate.icon}</span>
+                                {(() => {
+                                    const Icon = selectedTemplate.icon;
+                                    return <Icon className="w-5 h-5" />;
+                                })()}
                                 <span>{selectedTemplate.name}</span>
                             </div>
                         ) : (
@@ -88,47 +87,50 @@ export function LabelConfigSelector({
                                 {CATEGORY_LABELS[category as LabelConfigCategory]}
                             </DropdownMenuLabel>
 
-                            {templates.map((template) => (
-                                <DropdownMenuItem
-                                    key={template.id}
-                                    onClick={() => handleSelect(template)}
-                                    className="cursor-pointer"
-                                >
-                                    <div className="flex items-start gap-3 w-full py-1">
-                                        <span className="text-2xl shrink-0">{template.icon}</span>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-medium text-sm">
-                                                    {template.name}
-                                                </span>
-                                                {selectedTemplate?.id === template.id && (
-                                                    <Check className="w-4 h-4 text-primary" />
-                                                )}
-                                            </div>
-                                            <p className="text-xs text-text-tertiary mt-0.5">
-                                                {template.description}
-                                            </p>
-                                            {template.labels && (
-                                                <div className="flex flex-wrap gap-1 mt-1.5">
-                                                    {template.labels.slice(0, 3).map((label, idx) => (
-                                                        <span
-                                                            key={idx}
-                                                            className="px-1.5 py-0.5 text-xs bg-bg-tertiary border border-border-subtle rounded"
-                                                        >
-                                                            {label}
-                                                        </span>
-                                                    ))}
-                                                    {template.labels.length > 3 && (
-                                                        <span className="text-xs text-text-tertiary">
-                                                            +{template.labels.length - 3} more
-                                                        </span>
+                            {templates.map((template) => {
+                                const Icon = template.icon;
+                                return (
+                                    <DropdownMenuItem
+                                        key={template.id}
+                                        onClick={() => handleSelect(template)}
+                                        className="cursor-pointer"
+                                    >
+                                        <div className="flex items-start gap-3 w-full py-1">
+                                            <Icon className="w-5 h-5 shrink-0 mt-0.5" />
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-medium text-sm">
+                                                        {template.name}
+                                                    </span>
+                                                    {selectedTemplate?.id === template.id && (
+                                                        <Check className="w-4 h-4 text-primary" />
                                                     )}
                                                 </div>
-                                            )}
+                                                <p className="text-xs text-text-tertiary mt-0.5">
+                                                    {template.description}
+                                                </p>
+                                                {template.labels && (
+                                                    <div className="flex flex-wrap gap-1 mt-1.5">
+                                                        {template.labels.slice(0, 3).map((label, idx) => (
+                                                            <span
+                                                                key={idx}
+                                                                className="px-1.5 py-0.5 text-xs bg-bg-tertiary border border-border-subtle rounded"
+                                                            >
+                                                                {label}
+                                                            </span>
+                                                        ))}
+                                                        {template.labels.length > 3 && (
+                                                            <span className="text-xs text-text-tertiary">
+                                                                +{template.labels.length - 3} more
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                </DropdownMenuItem>
-                            ))}
+                                    </DropdownMenuItem>
+                                );
+                            })}
 
                             <DropdownMenuSeparator />
                         </div>
@@ -137,21 +139,24 @@ export function LabelConfigSelector({
             </DropdownMenu>
 
             {/* Selected Template Info */}
-            {selectedTemplate && (
-                <div className="mt-3 p-3 bg-bg-tertiary border border-border-subtle rounded-xl">
-                    <div className="flex items-start gap-2">
-                        <span className="text-xl">{selectedTemplate.icon}</span>
-                        <div className="flex-1">
-                            <h4 className="text-sm font-medium text-text-primary">
-                                {selectedTemplate.name}
-                            </h4>
-                            <p className="text-xs text-text-secondary mt-1">
-                                {selectedTemplate.description}
-                            </p>
+            {selectedTemplate && (() => {
+                const Icon = selectedTemplate.icon;
+                return (
+                    <div className="mt-3 p-3 bg-bg-tertiary border border-border-subtle rounded-xl">
+                        <div className="flex items-start gap-2">
+                            <Icon className="w-5 h-5 mt-0.5 shrink-0" />
+                            <div className="flex-1">
+                                <h4 className="text-sm font-medium text-text-primary">
+                                    {selectedTemplate.name}
+                                </h4>
+                                <p className="text-xs text-text-secondary mt-1">
+                                    {selectedTemplate.description}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
         </div>
     );
 }

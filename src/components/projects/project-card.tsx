@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MoreVertical, Trash2, Edit, ExternalLink, Loader2 } from 'lucide-react';
+import { MoreVertical, Trash2, Edit, ExternalLink, Loader2, Image, ScanSearch, Layers, FileText, Tag, Music, Folder } from 'lucide-react';
 import { ProjectWithStats } from '@/types/project';
 import {
     DropdownMenu,
@@ -17,6 +17,15 @@ interface ProjectCardProps {
     project: ProjectWithStats;
     onEdit?: (project: ProjectWithStats) => void;
 }
+
+const categoryConfig: Record<string, { icon: React.ComponentType<{ className?: string }>; label: string }> = {
+    classification: { icon: Image, label: 'Classification' },
+    object_detection: { icon: ScanSearch, label: 'Object Detection' },
+    segmentation: { icon: Layers, label: 'Segmentation' },
+    text_classification: { icon: FileText, label: 'Text Classification' },
+    ner: { icon: Tag, label: 'NER' },
+    audio: { icon: Music, label: 'Audio' },
+};
 
 export function ProjectCard({ project, onEdit }: ProjectCardProps) {
     const [isDeleting, setIsDeleting] = useState(false);
@@ -34,6 +43,10 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
             onSettled: () => setIsDeleting(false),
         });
     };
+
+    const category = project.category && categoryConfig[project.category];
+    const CategoryIcon = category ? category.icon : Folder;
+    const categoryLabel = category ? category.label : 'General';
 
     return (
         <div className="group relative bg-bg-secondary border border-border-subtle rounded-2xl p-6 hover:border-primary hover:shadow-card-hover transition-all">
@@ -78,15 +91,7 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
 
             {/* Icon/Category Badge */}
             <div className="w-12 h-12 bg-gradient-orange rounded-xl flex items-center justify-center mb-4 shadow-glow-orange">
-                <span className="text-2xl">
-                    {project.category === 'classification' && '🖼️'}
-                    {project.category === 'object_detection' && '⬜'}
-                    {project.category === 'segmentation' && '🎨'}
-                    {project.category === 'text_classification' && '📝'}
-                    {project.category === 'ner' && '🏷️'}
-                    {project.category === 'audio' && '🎵'}
-                    {!project.category && '📁'}
-                </span>
+                <CategoryIcon className="w-6 h-6 text-white" />
             </div>
 
             {/* Project Info */}
@@ -140,7 +145,10 @@ export function ProjectCard({ project, onEdit }: ProjectCardProps) {
 
             {/* Footer */}
             <div className="mt-4 pt-4 border-t border-border-subtle flex items-center justify-between text-xs text-text-tertiary">
-                <span className="capitalize">{project.category?.replace('_', ' ') || 'General'}</span>
+                <div className="flex items-center gap-1.5">
+                    <CategoryIcon className="w-3.5 h-3.5" />
+                    <span>{categoryLabel}</span>
+                </div>
                 <span>Created {new Date(project.created_at).toLocaleDateString()}</span>
             </div>
         </div>

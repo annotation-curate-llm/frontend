@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Users, Zap, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+
 import { useProjects } from '@/hooks/use-projects';
 import { useProjectTasks, useAssignTasks, useAutoAssignTasks } from '@/hooks/use-tasks';
 import { useAnnotators } from '@/hooks/use-users';
@@ -23,7 +24,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TaskStatus } from '@/types/task';
-import { cn } from '@/lib/utils';
+import { CATEGORY_CONFIG } from '@/types/label-config';
 
 export function AssignTasksPage() {
     const [selectedProjectId, setSelectedProjectId] = useState<string>('');
@@ -96,27 +97,31 @@ export function AssignTasksPage() {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
-                        {projects?.map((project) => (
-                            <DropdownMenuItem
-                                key={project.id}
-                                onClick={() => setSelectedProjectId(project.id)}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xl">
-                                        {project.category === 'classification' && '🖼️'}
-                                        {project.category === 'object_detection' && '⬜'}
-                                        {project.category === 'segmentation' && '🎨'}
-                                        {!project.category && '📁'}
-                                    </span>
-                                    <div>
-                                        <p className="font-medium">{project.name}</p>
-                                        <p className="text-xs text-text-tertiary">
-                                            {project.total_tasks || 0} tasks
-                                        </p>
+                        {projects?.map((project) => {
+                            const config =
+                                project.category && project.category in CATEGORY_CONFIG
+                                    ? CATEGORY_CONFIG[project.category as keyof typeof CATEGORY_CONFIG]
+                                    : CATEGORY_CONFIG.custom;
+                            const Icon = config.icon;
+                            return (
+                                <DropdownMenuItem
+                                    key={project.id}
+                                    onClick={() => setSelectedProjectId(project.id)}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                                            <Icon className="w-4 h-4 text-primary" />
+                                        </div>
+                                        <div>
+                                            <p className="font-medium">{project.name}</p>
+                                            <p className="text-xs text-text-tertiary">
+                                                {project.total_tasks || 0} tasks
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            </DropdownMenuItem>
-                        ))}
+                                </DropdownMenuItem>
+                            );
+                        })}
                     </DropdownMenuContent>
                 </DropdownMenu>
 
