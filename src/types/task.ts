@@ -17,6 +17,7 @@ export interface Task {
     assigned_to?: string | null;
     status: TaskStatus;
     label_studio_task_id?: number;
+    label_studio_project_id?: number | null;
     priority: number;
     assigned_at?: string;
     started_at?: string;

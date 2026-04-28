@@ -28,7 +28,7 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
 
     const getLabelStudioUrl = () => {
         const baseUrl = process.env.NEXT_PUBLIC_LABEL_STUDIO_URL || 'http://localhost:8080';
-        return `${baseUrl}/tasks/${task.label_studio_task_id}/labeling`;
+        return `${baseUrl}/projects/${task.label_studio_project_id}/data?tab=1&task=${task.label_studio_task_id}`;
     };
 
     const openLabelStudio = (url: string) => {
@@ -36,10 +36,18 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
     };
 
     const handleStart = () => {
+        // 1. Update task status to IN_PROGRESS
         onStart?.(task.id);
-        if (!task.label_studio_task_id) return;
+
+        // 2. Check if LS task ID exists
+        if (!task.label_studio_task_id) {
+            console.warn('[TaskCard] No label_studio_task_id found for task:', task.id, task);
+            return;
+        }
 
         const url = getLabelStudioUrl();
+        console.log('[TaskCard] Opening Label Studio URL:', url);
+
         const alreadyShown = localStorage.getItem(LS_CREDENTIALS_KEY);
 
         if (!alreadyShown) {
@@ -146,18 +154,24 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
                                 <Calendar className="w-3 h-3" />
                                 <span>{formatDistanceToNow(new Date(task.created_at), { addSuffix: true })}</span>
                             </div>
-                            {task.label_studio_task_id && (
+                            {task.label_studio_task_id ? (
                                 <span className="text-success">LS Task #{task.label_studio_task_id}</span>
+                            ) : (
+                                <span className="text-warning">No LS Task ID</span>
                             )}
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        {task.status === TaskStatus.IN_PROGRESS && task.label_studio_task_id && (
-                            <Button size="sm" variant="outline" onClick={() => openLabelStudio(getLabelStudioUrl())}>
-                                <ExternalLink className="w-3 h-3 mr-1" />
-                                Continue in Label Studio
-                            </Button>
+                        {task.status === TaskStatus.IN_PROGRESS && (
+                            task.label_studio_task_id ? (
+                                <Button size="sm" variant="outline" onClick={() => openLabelStudio(getLabelStudioUrl())}>
+                                    <ExternalLink className="w-3 h-3 mr-1" />
+                                    Continue in Label Studio
+                                </Button>
+                            ) : (
+                                <span className="text-xs text-warning font-medium">⚠ No LS Task linked</span>
+                            )
                         )}
                         {task.status === TaskStatus.ASSIGNED && (
                             <Button size="sm" onClick={handleStart}>

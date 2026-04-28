@@ -83,8 +83,8 @@ export function TasksPage() {
                 <button
                     onClick={() => setStatusFilter('all')}
                     className={`p-4 bg-bg-secondary border rounded-xl text-left transition-all ${statusFilter === 'all'
-                            ? 'border-primary shadow-sm'
-                            : 'border-border-subtle hover:border-border-default'
+                        ? 'border-primary shadow-sm'
+                        : 'border-border-subtle hover:border-border-default'
                         }`}
                 >
                     <p className="text-2xl font-bold text-text-primary">{statusCounts.all}</p>
@@ -94,8 +94,8 @@ export function TasksPage() {
                 <button
                     onClick={() => setStatusFilter(TaskStatus.ASSIGNED)}
                     className={`p-4 bg-bg-secondary border rounded-xl text-left transition-all ${statusFilter === TaskStatus.ASSIGNED
-                            ? 'border-info shadow-sm'
-                            : 'border-border-subtle hover:border-border-default'
+                        ? 'border-info shadow-sm'
+                        : 'border-border-subtle hover:border-border-default'
                         }`}
                 >
                     <p className="text-2xl font-bold text-info">{statusCounts.assigned}</p>
@@ -105,8 +105,8 @@ export function TasksPage() {
                 <button
                     onClick={() => setStatusFilter(TaskStatus.IN_PROGRESS)}
                     className={`p-4 bg-bg-secondary border rounded-xl text-left transition-all ${statusFilter === TaskStatus.IN_PROGRESS
-                            ? 'border-warning shadow-sm'
-                            : 'border-border-subtle hover:border-border-default'
+                        ? 'border-warning shadow-sm'
+                        : 'border-border-subtle hover:border-border-default'
                         }`}
                 >
                     <p className="text-2xl font-bold text-warning">{statusCounts.in_progress}</p>
@@ -116,8 +116,8 @@ export function TasksPage() {
                 <button
                     onClick={() => setStatusFilter(TaskStatus.COMPLETED)}
                     className={`p-4 bg-bg-secondary border rounded-xl text-left transition-all ${statusFilter === TaskStatus.COMPLETED
-                            ? 'border-success shadow-sm'
-                            : 'border-border-subtle hover:border-border-default'
+                        ? 'border-success shadow-sm'
+                        : 'border-border-subtle hover:border-border-default'
                         }`}
                 >
                     <p className="text-2xl font-bold text-success">{statusCounts.completed}</p>
@@ -127,8 +127,8 @@ export function TasksPage() {
                 <button
                     onClick={() => setStatusFilter(TaskStatus.REVIEWED)}
                     className={`p-4 bg-bg-secondary border rounded-xl text-left transition-all ${statusFilter === TaskStatus.REVIEWED
-                            ? 'border-primary shadow-sm'
-                            : 'border-border-subtle hover:border-border-default'
+                        ? 'border-primary shadow-sm'
+                        : 'border-border-subtle hover:border-border-default'
                         }`}
                 >
                     <p className="text-2xl font-bold text-primary">{statusCounts.reviewed}</p>
