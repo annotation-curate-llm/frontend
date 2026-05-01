@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { MyTask, TaskStatus } from '@/types/task';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Calendar, Copy, Check } from 'lucide-react';
+import { ExternalLink, Calendar, Copy, Check, CheckCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {
     Dialog,
@@ -13,18 +13,22 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog';
+import { api } from '@/lib/api-client';
 
 interface TaskCardProps {
     task: MyTask;
     onStart?: (taskId: string) => void;
+    onComplete?: (taskId: string) => void;
 }
 
 const LS_CREDENTIALS_KEY = 'ls_credentials_shown';
 
-export function TaskCard({ task, onStart }: TaskCardProps) {
+export function TaskCard({ task, onStart, onComplete }: TaskCardProps) {
     const [showCredentials, setShowCredentials] = useState(false);
     const [copied, setCopied] = useState<'email' | 'password' | null>(null);
     const [pendingUrl, setPendingUrl] = useState<string | null>(null);
+    const [showCompleteDialog, setShowCompleteDialog] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const getLabelStudioUrl = () => {
         const baseUrl = process.env.NEXT_PUBLIC_LABEL_STUDIO_URL || 'http://localhost:8080';
@@ -36,26 +40,20 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
     };
 
     const handleStart = () => {
-        // 1. Update task status to IN_PROGRESS
         onStart?.(task.id);
 
-        // 2. Check if LS task ID exists
         if (!task.label_studio_task_id) {
             console.warn('[TaskCard] No label_studio_task_id found for task:', task.id, task);
             return;
         }
 
         const url = getLabelStudioUrl();
-        console.log('[TaskCard] Opening Label Studio URL:', url);
-
         const alreadyShown = localStorage.getItem(LS_CREDENTIALS_KEY);
 
         if (!alreadyShown) {
-            // Show credentials modal first time
             setPendingUrl(url);
             setShowCredentials(true);
         } else {
-            // Already seen credentials, go directly
             openLabelStudio(url);
         }
     };
@@ -76,6 +74,28 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
         setTimeout(() => setCopied(null), 2000);
     };
 
+    const handleMarkComplete = async () => {
+        setIsSubmitting(true);
+        try {
+            // Create annotation record in your DB
+            await api.post('/annotations/', {
+                task_id: task.id,
+                annotation_data: {
+                    result: [],  // Label Studio already has the real result
+                    note: 'Submitted via Label Studio'
+                },
+                time_spent: 0
+            });
+
+            onComplete?.(task.id);
+            setShowCompleteDialog(false);
+        } catch (err) {
+            console.error('Failed to mark task complete:', err);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <>
             {/* Credentials Modal */}
@@ -89,7 +109,6 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
                     </DialogHeader>
 
                     <div className="space-y-3 my-2">
-                        {/* Email */}
                         <div className="flex items-center justify-between p-3 bg-bg-secondary rounded-lg border border-border-subtle">
                             <div>
                                 <p className="text-xs text-text-tertiary mb-0.5">Email</p>
@@ -102,7 +121,6 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
                             </button>
                         </div>
 
-                        {/* Password */}
                         <div className="flex items-center justify-between p-3 bg-bg-secondary rounded-lg border border-border-subtle">
                             <div>
                                 <p className="text-xs text-text-tertiary mb-0.5">Password</p>
@@ -127,6 +145,31 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
                         <Button className="flex-1" onClick={handleContinue}>
                             <ExternalLink className="w-3 h-3 mr-1" />
                             Open Label Studio
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Mark Complete Confirmation Dialog */}
+            <Dialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Mark Task as Complete?</DialogTitle>
+                        <DialogDescription>
+                            Make sure you have submitted your annotation in Label Studio before marking this task as complete.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex gap-2 mt-2">
+                        <Button variant="outline" className="flex-1" onClick={() => setShowCompleteDialog(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            className="flex-1"
+                            onClick={handleMarkComplete}
+                            disabled={isSubmitting}
+                        >
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            {isSubmitting ? 'Submitting...' : 'Yes, Mark Complete'}
                         </Button>
                     </div>
                 </DialogContent>
@@ -164,14 +207,19 @@ export function TaskCard({ task, onStart }: TaskCardProps) {
 
                     <div className="flex items-center gap-2">
                         {task.status === TaskStatus.IN_PROGRESS && (
-                            task.label_studio_task_id ? (
-                                <Button size="sm" variant="outline" onClick={() => openLabelStudio(getLabelStudioUrl())}>
-                                    <ExternalLink className="w-3 h-3 mr-1" />
-                                    Continue in Label Studio
+                            <div className="flex gap-2">
+                                {task.label_studio_task_id && (
+                                    <Button size="sm" variant="outline" onClick={() => openLabelStudio(getLabelStudioUrl())}>
+                                        <ExternalLink className="w-3 h-3 mr-1" />
+                                        Continue
+                                    </Button>
+                                )}
+                                {/* NEW: Mark Complete button */}
+                                <Button size="sm" onClick={() => setShowCompleteDialog(true)}>
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Mark Complete
                                 </Button>
-                            ) : (
-                                <span className="text-xs text-warning font-medium">⚠ No LS Task linked</span>
-                            )
+                            </div>
                         )}
                         {task.status === TaskStatus.ASSIGNED && (
                             <Button size="sm" onClick={handleStart}>
