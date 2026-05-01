@@ -6,26 +6,20 @@ import { useMyTasks, useUpdateTask } from '@/hooks/use-tasks';
 import { TaskCard } from '@/components/tasks/task-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { TaskStatus } from '@/types/task';
+import { useQueryClient } from '@tanstack/react-query';
+import { taskKeys } from '@/hooks/use-tasks';
 
 export function TasksPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<TaskStatus | 'all'>('all');
+    const queryClient = useQueryClient();
 
     const { data: tasks, isLoading, error } = useMyTasks(
         statusFilter === 'all' ? undefined : statusFilter
     );
     const updateTask = useUpdateTask();
 
-    // Filter tasks by search
     const filteredTasks = tasks?.filter((task) => {
         const matchesSearch = task.asset?.file_name
             .toLowerCase()
@@ -40,7 +34,11 @@ export function TasksPage() {
         });
     };
 
-    // Count by status
+    // NEW: refresh task list after annotation submitted
+    const handleCompleteTask = () => {
+        queryClient.invalidateQueries({ queryKey: taskKeys.myTasks() });
+    };
+
     const statusCounts = {
         all: tasks?.length || 0,
         assigned: tasks?.filter((t) => t.status === TaskStatus.ASSIGNED).length || 0,
@@ -70,7 +68,6 @@ export function TasksPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-text-primary">My Tasks</h1>
                 <p className="text-text-secondary mt-1">
@@ -78,7 +75,6 @@ export function TasksPage() {
                 </p>
             </div>
 
-            {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <button
                     onClick={() => setStatusFilter('all')}
@@ -136,7 +132,6 @@ export function TasksPage() {
                 </button>
             </div>
 
-            {/* Search Bar */}
             <div className="flex items-center gap-3">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary" />
@@ -149,15 +144,18 @@ export function TasksPage() {
                 </div>
             </div>
 
-            {/* Tasks List */}
             {filteredTasks && filteredTasks.length > 0 ? (
                 <div className="space-y-3">
                     {filteredTasks.map((task) => (
-                        <TaskCard key={task.id} task={task} onStart={handleStartTask} />
+                        <TaskCard
+                            key={task.id}
+                            task={task}
+                            onStart={handleStartTask}
+                            onComplete={handleCompleteTask}
+                        />
                     ))}
                 </div>
             ) : (
-                // Empty State
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
                     <div className="w-16 h-16 bg-bg-tertiary rounded-2xl flex items-center justify-center mb-4">
                         <CheckSquare className="w-8 h-8 text-text-tertiary" />
@@ -175,7 +173,6 @@ export function TasksPage() {
                 </div>
             )}
 
-            {/* Footer Stats */}
             {filteredTasks && filteredTasks.length > 0 && (
                 <div className="text-sm text-text-tertiary pt-4 border-t border-border-subtle">
                     Showing {filteredTasks.length} of {tasks?.length || 0} tasks
