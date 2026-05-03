@@ -77,13 +77,13 @@ export function TaskCard({ task, onStart, onComplete }: TaskCardProps) {
     const handleMarkComplete = async () => {
         setIsSubmitting(true);
         try {
-            // Create annotation record in your DB
+            const { data: lsAnnotation } = await api.get(
+                `/annotations/ls-result/${task.label_studio_task_id}`
+            );
+
             await api.post('/annotations/', {
                 task_id: task.id,
-                annotation_data: {
-                    result: [],  // Label Studio already has the real result
-                    note: 'Submitted via Label Studio'
-                },
+                annotation_data: lsAnnotation?.result || { result: [], note: 'Submitted via Label Studio' },
                 time_spent: 0
             });
 

@@ -117,7 +117,7 @@ export function ExportDataPage() {
                                         <div>
                                             <p className="font-medium">{project.name}</p>
                                             <p className="text-xs text-text-tertiary">
-                                                {project.completed_tasks || 0} completed tasks
+                                                {project.reviewed_tasks || 0} reviewed tasks ready for export
                                             </p>
                                         </div>
                                     </DropdownMenuItem>
@@ -159,6 +159,24 @@ export function ExportDataPage() {
                         </DropdownMenu>
                     </div>
                 </div>
+
+                {/* Reviewed Tasks Info Banner — shows after project selected */}
+                {selectedProject && (
+                    <div className="mt-4 p-4 bg-success/10 border border-success/20 rounded-xl flex items-center gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
+                        <p className="text-sm text-text-secondary">
+                            <strong className="text-success">
+                                {selectedProject.reviewed_tasks || 0} reviewed annotations
+                            </strong>{' '}
+                            are ready to export from this project.
+                            {(selectedProject.completed_tasks || 0) > (selectedProject.reviewed_tasks || 0) && (
+                                <span className="ml-1 text-text-tertiary">
+                                    ({(selectedProject.completed_tasks || 0) - (selectedProject.reviewed_tasks || 0)} still pending review)
+                                </span>
+                            )}
+                        </p>
+                    </div>
+                )}
 
                 {/* Selected Format Info */}
                 {selectedFormat && (
