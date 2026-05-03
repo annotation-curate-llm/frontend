@@ -21,7 +21,7 @@ export const taskKeys = {
 };
 
 // Get my tasks
-export function useMyTasks(status?: TaskStatus) {
+export function useMyTasks(status?: TaskStatus, options?: { refetchInterval?: number }) {
     return useQuery({
         queryKey: taskKeys.myTasks(status),
         queryFn: async () => {
@@ -29,6 +29,7 @@ export function useMyTasks(status?: TaskStatus) {
             const { data } = await api.get<MyTask[]>(`/tasks/my-tasks${params}`);
             return data;
         },
+        refetchInterval: options?.refetchInterval,
     });
 }
 

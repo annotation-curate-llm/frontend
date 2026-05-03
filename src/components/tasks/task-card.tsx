@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { MyTask, TaskStatus } from '@/types/task';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Calendar, Copy, Check, CheckCircle } from 'lucide-react';
+import { ExternalLink, Calendar, Copy, Check, Clock, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {
     Dialog,
@@ -27,8 +27,7 @@ export function TaskCard({ task, onStart, onComplete }: TaskCardProps) {
     const [showCredentials, setShowCredentials] = useState(false);
     const [copied, setCopied] = useState<'email' | 'password' | null>(null);
     const [pendingUrl, setPendingUrl] = useState<string | null>(null);
-    const [showCompleteDialog, setShowCompleteDialog] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isChecking, setIsChecking] = useState(false);
 
     const getLabelStudioUrl = () => {
         const baseUrl = process.env.NEXT_PUBLIC_LABEL_STUDIO_URL || 'http://localhost:8080';
@@ -39,17 +38,39 @@ export function TaskCard({ task, onStart, onComplete }: TaskCardProps) {
         window.open(url, '_blank');
     };
 
-    const handleStart = () => {
-        onStart?.(task.id);
-
+    const handleStart = async () => {
         if (!task.label_studio_task_id) {
             console.warn('[TaskCard] No label_studio_task_id found for task:', task.id, task);
+            onStart?.(task.id);
             return;
         }
 
+        setIsChecking(true);
+        try {
+            // Check if already completed in Label Studio
+            const { data: lsResult } = await api.get(
+                `/annotations/ls-result/${task.label_studio_task_id}`
+            );
+
+            const hasAnnotation = lsResult?.result?.result?.length > 0;
+
+            if (hasAnnotation) {
+                // Already done in LS — just mark as in_progress
+                // webhook will auto-complete it shortly
+                onStart?.(task.id);
+                onComplete?.(task.id);
+                return;
+            }
+        } catch (e) {
+            // ignore error — proceed normally
+        } finally {
+            setIsChecking(false);
+        }
+
+        // Not done in LS yet — open Label Studio
+        onStart?.(task.id);
         const url = getLabelStudioUrl();
         const alreadyShown = localStorage.getItem(LS_CREDENTIALS_KEY);
-
         if (!alreadyShown) {
             setPendingUrl(url);
             setShowCredentials(true);
@@ -72,28 +93,6 @@ export function TaskCard({ task, onStart, onComplete }: TaskCardProps) {
         navigator.clipboard.writeText(value);
         setCopied(type);
         setTimeout(() => setCopied(null), 2000);
-    };
-
-    const handleMarkComplete = async () => {
-        setIsSubmitting(true);
-        try {
-            const { data: lsAnnotation } = await api.get(
-                `/annotations/ls-result/${task.label_studio_task_id}`
-            );
-
-            await api.post('/annotations/', {
-                task_id: task.id,
-                annotation_data: lsAnnotation?.result || { result: [], note: 'Submitted via Label Studio' },
-                time_spent: 0
-            });
-
-            onComplete?.(task.id);
-            setShowCompleteDialog(false);
-        } catch (err) {
-            console.error('Failed to mark task complete:', err);
-        } finally {
-            setIsSubmitting(false);
-        }
     };
 
     return (
@@ -150,31 +149,6 @@ export function TaskCard({ task, onStart, onComplete }: TaskCardProps) {
                 </DialogContent>
             </Dialog>
 
-            {/* Mark Complete Confirmation Dialog */}
-            <Dialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Mark Task as Complete?</DialogTitle>
-                        <DialogDescription>
-                            Make sure you have submitted your annotation in Label Studio before marking this task as complete.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex gap-2 mt-2">
-                        <Button variant="outline" className="flex-1" onClick={() => setShowCompleteDialog(false)}>
-                            Cancel
-                        </Button>
-                        <Button
-                            className="flex-1"
-                            onClick={handleMarkComplete}
-                            disabled={isSubmitting}
-                        >
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            {isSubmitting ? 'Submitting...' : 'Yes, Mark Complete'}
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
             {/* Task Card */}
             <div className="bg-bg-secondary border border-border-subtle rounded-xl p-4 hover:border-primary transition-all">
                 <div className="flex items-start justify-between gap-4">
@@ -207,28 +181,43 @@ export function TaskCard({ task, onStart, onComplete }: TaskCardProps) {
 
                     <div className="flex items-center gap-2">
                         {task.status === TaskStatus.IN_PROGRESS && (
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-2">
                                 {task.label_studio_task_id && (
                                     <Button size="sm" variant="outline" onClick={() => openLabelStudio(getLabelStudioUrl())}>
                                         <ExternalLink className="w-3 h-3 mr-1" />
-                                        Continue
+                                        Continue in Label Studio
                                     </Button>
                                 )}
-                                {/* NEW: Mark Complete button */}
-                                <Button size="sm" onClick={() => setShowCompleteDialog(true)}>
-                                    <CheckCircle className="w-3 h-3 mr-1" />
-                                    Mark Complete
-                                </Button>
+                                <span className="text-xs text-warning font-medium flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    Auto-completes after submission
+                                </span>
                             </div>
                         )}
                         {task.status === TaskStatus.ASSIGNED && (
-                            <Button size="sm" onClick={handleStart}>
-                                <ExternalLink className="w-3 h-3 mr-1" />
-                                {task.label_studio_task_id ? 'Start Annotating' : 'Start'}
+                            <Button
+                                size="sm"
+                                onClick={handleStart}
+                                disabled={isChecking}
+                            >
+                                {isChecking ? (
+                                    <>
+                                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                        Checking...
+                                    </>
+                                ) : (
+                                    <>
+                                        <ExternalLink className="w-3 h-3 mr-1" />
+                                        {task.label_studio_task_id ? 'Start Annotating' : 'Start'}
+                                    </>
+                                )}
                             </Button>
                         )}
                         {task.status === TaskStatus.COMPLETED && (
                             <span className="text-xs text-success font-medium">✓ Completed</span>
+                        )}
+                        {task.status === TaskStatus.REVIEWED && (
+                            <span className="text-xs text-primary font-medium">✓ Reviewed</span>
                         )}
                     </div>
                 </div>
