@@ -32,4 +32,5 @@ export interface ProjectWithStats extends Project {
     total_tasks: number;
     completed_tasks: number;
     pending_tasks: number;
+    reviewed_tasks: number;
 }
