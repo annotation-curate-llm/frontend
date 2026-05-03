@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Upload, X, File, Image as ImageIcon, Loader2, CheckCircle2 } from 'lucide-react';
+import { Upload, X, File, Image as ImageIcon, Loader2, CheckCircle2, Music, FileText } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -33,7 +33,8 @@ export function FileUpload({
     accept = {
         'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
         'video/*': ['.mp4', '.webm'],
-        'audio/*': ['.mp3', '.wav'],
+        'audio/*': ['.mp3', '.wav', '.ogg', '.m4a'],
+        'text/plain': ['.txt'],
     },
 }: FileUploadProps) {
     const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -145,7 +146,7 @@ export function FileUpload({
                             Drag & drop files here, or click to select
                         </p>
                         <p className="text-sm text-text-tertiary">
-                            Supports images, videos, and audio files (max {maxFiles} files)
+                            Supports images, audio (.mp3, .wav), and text (.txt) files (max {maxFiles} files)
                         </p>
                     </>
                 )}
@@ -207,25 +208,20 @@ export function FileUpload({
     );
 }
 
-function FileItem({
-    uploadFile,
-    onRemove,
-}: {
-    uploadFile: UploadedFile;
-    onRemove: () => void;
-}) {
+function FileItem({ uploadFile, onRemove }: { uploadFile: UploadedFile; onRemove: () => void }) {
     const { file, status, progress, error } = uploadFile;
     const isImage = file.type.startsWith('image/');
+    const isAudio = file.type.startsWith('audio/');
+    const isText = file.type === 'text/plain';
+
+    // Pick icon based on type
+    const FileIcon = isImage ? ImageIcon : isAudio ? Music : isText ? FileText : File;
 
     return (
         <div className="flex items-center gap-3 p-3 bg-bg-secondary border border-border-subtle rounded-xl">
-            {/* Icon/Preview */}
+            {/* Icon */}
             <div className="w-12 h-12 bg-bg-tertiary rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
-                {isImage ? (
-                    <ImageIcon className="w-6 h-6 text-text-tertiary" />
-                ) : (
-                    <File className="w-6 h-6 text-text-tertiary" />
-                )}
+                <FileIcon className="w-6 h-6 text-text-tertiary" />
             </div>
 
             {/* Info */}
@@ -235,6 +231,9 @@ function FileItem({
                     <p className="text-xs text-text-tertiary">
                         {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
+                    <span className="text-xs text-text-tertiary capitalize">
+                        {isImage ? 'Image' : isAudio ? 'Audio' : isText ? 'Text' : 'File'}
+                    </span>
                     {status === 'success' && <CheckCircle2 className="w-4 h-4 text-success" />}
                     {status === 'error' && (
                         <span className="text-xs text-error">{error || 'Failed'}</span>
