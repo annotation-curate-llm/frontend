@@ -94,13 +94,12 @@ export function ReviewQueuePage() {
                             variant="outline"
                             onClick={() => router.push('/dashboard/exports')}
                         >
-                            <ArrowRight className="w-4 h-4 mr-2" />
                             Go to Exports
                         </Button>
                     )}
-                    <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-xl">
+                    <div className="px-4 py-1 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center gap-2">
+                        <p className="text-xl font-bold text-primary">{pendingCount}</p>
                         <p className="text-sm text-text-tertiary">Pending Reviews</p>
-                        <p className="text-3xl font-bold text-primary">{pendingCount}</p>
                     </div>
                 </div>
             </div>
@@ -188,7 +187,6 @@ export function ReviewQueuePage() {
                     <p className="text-text-secondary mb-6">All annotations have been reviewed. Great job!</p>
                     {isAdmin && (
                         <Button onClick={() => router.push('/dashboard/exports')}>
-                            <ArrowRight className="w-4 h-4 mr-2" />
                             Go to Exports
                         </Button>
                     )}

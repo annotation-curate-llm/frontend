@@ -56,13 +56,12 @@ export function TaskCard({ task, onStart, onComplete }: TaskCardProps) {
 
             if (hasAnnotation) {
                 // Already done in LS — just mark as in_progress
-                // webhook will auto-complete it shortly
-                onStart?.(task.id);
+                // just trigger a refresh
                 onComplete?.(task.id);
                 return;
             }
         } catch (e) {
-            // ignore error — proceed normally
+            // ignore 
         } finally {
             setIsChecking(false);
         }
