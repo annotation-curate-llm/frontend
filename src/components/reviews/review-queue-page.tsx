@@ -23,7 +23,6 @@ export function ReviewQueuePage() {
     const [selectedReview, setSelectedReview] = useState<ReviewWithDetails | null>(null);
     const [comments, setComments] = useState('');
     const [reviewAction, setReviewAction] = useState<ReviewStatus | null>(null);
-    const [showExportPrompt, setShowExportPrompt] = useState(false);
 
     const router = useRouter();
     const { data: session } = useSession();
@@ -53,10 +52,6 @@ export function ReviewQueuePage() {
                     setReviewAction(null);
                     setComments('');
 
-                    // If approved and user is admin, show export prompt
-                    if (reviewAction === ReviewStatus.APPROVED && isAdmin) {
-                        setShowExportPrompt(true);
-                    }
                 },
             }
         );
@@ -277,29 +272,6 @@ export function ReviewQueuePage() {
                 </DialogContent>
             </Dialog>
 
-            {/* Export Prompt Dialog — shown after admin approves */}
-            <Dialog open={showExportPrompt} onOpenChange={setShowExportPrompt}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-success">
-                            <CheckCircle2 className="w-5 h-5" />
-                            Annotation Approved!
-                        </DialogTitle>
-                        <DialogDescription>
-                            This annotation is now ready for export. Would you like to go to the exports page?
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="gap-2 mt-2">
-                        <Button variant="outline" onClick={() => setShowExportPrompt(false)}>
-                            Stay Here
-                        </Button>
-                        <Button onClick={() => { setShowExportPrompt(false); router.push('/dashboard/exports'); }}>
-                            <ArrowRight className="w-4 h-4 mr-2" />
-                            Go to Exports
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }

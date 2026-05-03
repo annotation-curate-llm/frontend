@@ -1,11 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, Loader2, CheckSquare } from 'lucide-react';
+import { Search, Loader2, CheckSquare } from 'lucide-react';
 import { useMyTasks, useUpdateTask } from '@/hooks/use-tasks';
 import { TaskCard } from '@/components/tasks/task-card';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { TaskStatus } from '@/types/task';
 import { useQueryClient } from '@tanstack/react-query';
 import { taskKeys } from '@/hooks/use-tasks';
@@ -13,11 +12,16 @@ import { taskKeys } from '@/hooks/use-tasks';
 export function TasksPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<TaskStatus | 'all'>('all');
-    const queryClient = useQueryClient();
 
+    const queryClient = useQueryClient();
     const { data: tasks, isLoading, error } = useMyTasks(
-        statusFilter === 'all' ? undefined : statusFilter
+        statusFilter === 'all' ? undefined : statusFilter,
+        { refetchInterval: 30000 }
     );
+
+    const handleCompleteTask = () => {
+        queryClient.invalidateQueries({ queryKey: taskKeys.myTasks() });
+    };
     const updateTask = useUpdateTask();
 
     const filteredTasks = tasks?.filter((task) => {
@@ -32,11 +36,6 @@ export function TasksPage() {
             id: taskId,
             updates: { status: TaskStatus.IN_PROGRESS },
         });
-    };
-
-    // NEW: refresh task list after annotation submitted
-    const handleCompleteTask = () => {
-        queryClient.invalidateQueries({ queryKey: taskKeys.myTasks() });
     };
 
     const statusCounts = {
@@ -152,6 +151,7 @@ export function TasksPage() {
                             task={task}
                             onStart={handleStartTask}
                             onComplete={handleCompleteTask}
+
                         />
                     ))}
                 </div>
