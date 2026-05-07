@@ -8,10 +8,8 @@ import Link from "next/link";
 export default function CTA() {
     return (
         <section className="py-20 px-4 bg-bg-primary relative overflow-hidden">
-            {/* Background gradient - matching Features */}
-            {/* <div className="absolute inset-0 bg-gradient-subtle opacity-50" /> */}
 
-            {/* Additional glow effects */}
+            {/* glow effects */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-500/10 rounded-full blur-3xl" />
 
             <div className="max-w-7xl mx-auto relative z-10">

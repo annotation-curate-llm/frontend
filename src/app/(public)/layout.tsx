@@ -1,6 +1,5 @@
 import PublicNavbar from '@/components/layout/PublicNavbar'
 import Footer from '@/components/layout/Footer'
-import Beams from '@/components/ui/Beams'
 
 export default function PublicLayout({
     children,
