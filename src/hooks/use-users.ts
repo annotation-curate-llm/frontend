@@ -57,7 +57,7 @@ export function useUser(id: string) {
     });
 }
 
-// Update user (Admin only - mainly for changing roles)
+// Update user
 export function useUpdateUser() {
     const queryClient = useQueryClient();
 
@@ -66,9 +66,17 @@ export function useUpdateUser() {
             const { data } = await api.patch<User>(`/users/${id}`, updates);
             return data;
         },
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
             queryClient.invalidateQueries({ queryKey: userKeys.lists() });
             queryClient.invalidateQueries({ queryKey: userKeys.detail(data.id) });
+            queryClient.invalidateQueries({ queryKey: userKeys.me() });
+
+            // Force NextAuth session to re-fetch from backend
+            await fetch('/api/auth/session?update', { method: 'GET' });
+
+            // Trigger session update so useSession() reflects new name
+            const event = new Event('visibilitychange');
+            document.dispatchEvent(event);
         },
     });
 }
