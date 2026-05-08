@@ -56,17 +56,34 @@ const handler = NextAuth({
                 token.id = user.id;
                 token.role = user.role;
                 token.backendToken = user.backendToken;
+                token.name = user.name;
             }
             return token;
         },
 
         async session({ session, token }) {
-            // Add custom fields to session
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as 'admin' | 'annotator' | 'reviewer';
                 // @ts-ignore
                 session.backendToken = token.backendToken as string;
+
+                // Fetch fresh name from backend on every session call
+                try {
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/me`, {
+                        headers: {
+                            Authorization: `Bearer ${token.backendToken}`
+                        }
+                    });
+                    if (res.ok) {
+                        const freshUser = await res.json();
+                        session.user.name = freshUser.name;
+                        session.user.image = freshUser.avatar_url;
+                    }
+                } catch {
+                    // fallback to token name if fetch fails
+                    session.user.name = token.name as string;
+                }
             }
             return session;
         },
