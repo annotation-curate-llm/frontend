@@ -53,7 +53,7 @@ const features = [
 
 export default function Features() {
     return (
-        <section className="flex flex-col md:grid md:grid-cols-[280px_1fr] border-b border-(--color-border-subtle) bg-(--color-bg-primary)">
+        <section id="features" className="flex flex-col md:grid md:grid-cols-[280px_1fr] border-b border-(--color-border-subtle) bg-(--color-bg-primary)">
 
             {/* ── Left panel ── */}
             <div className="flex flex-col justify-between px-6 py-12 md:px-12 md:py-16 border-b border-(--color-border-subtle) md:border-b-0 md:border-r md:border-(--color-border-subtle) md:sticky md:top-0 md:self-start">
