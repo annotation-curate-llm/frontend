@@ -79,13 +79,11 @@ export function Header({ user, notificationCount = 0, onSignOut }: HeaderProps) 
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
-        // In a real app, this would update the theme context
         document.documentElement.classList.toggle('dark', newTheme === 'dark');
     };
 
     const handleSearchToggle = () => {
         setSearchOpen(!searchOpen);
-        // In a real app, this would open a command palette
     };
 
     return (

@@ -3,9 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import { User } from '@/types/user';
 
-/**
- * Hook to get current user from session
- */
+// Hook to get current user from session
 export function useUser() {
     const { data: session, status } = useSession();
 
@@ -16,9 +14,7 @@ export function useUser() {
     };
 }
 
-/**
- * Hook to get backend JWT token from session
- */
+// Hook to get backend JWT token from session
 export function useBackendToken() {
     const { data: session } = useSession();
     // @ts-ignore - backendToken is custom property
@@ -62,9 +58,7 @@ export function useUserDetails() {
     });
 }
 
-/**
- * Type guard to check if user has a specific role
- */
+// Type guard to check if user has a specific role
 export function useHasRole(allowedRoles: string[]) {
     const { user } = useUser();
 
@@ -73,23 +67,17 @@ export function useHasRole(allowedRoles: string[]) {
     return allowedRoles.includes(user.role);
 }
 
-/**
- * Hook to check if user is admin
- */
+//Hook to check if user is admin
 export function useIsAdmin() {
     return useHasRole(['admin']);
 }
 
-/**
- * Hook to check if user is annotator
- */
+// Hook to check if user is annotator
 export function useIsAnnotator() {
     return useHasRole(['annotator']);
 }
 
-/**
- * Hook to check if user is reviewer
- */
+//Hook to check if user is reviewer
 export function useIsReviewer() {
     return useHasRole(['reviewer']);
 }

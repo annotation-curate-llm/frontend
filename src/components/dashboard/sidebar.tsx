@@ -14,7 +14,6 @@ import {
     Search,
     BarChart3,
     Upload,
-    ScrollText,
     Settings,
     Clock,
     CheckCircle,
@@ -32,6 +31,7 @@ interface NavItem {
     href: string;
     icon: React.ComponentType<{ className?: string }>;
     badge?: number;
+    exactMatch?: boolean;
 }
 
 interface NavSection {
@@ -62,6 +62,7 @@ const adminNavigation: NavSection[] = [
                 title: 'All Projects',
                 href: '/dashboard/projects',
                 icon: FolderOpen,
+                exactMatch: false,
             },
             {
                 title: 'Create Project',
@@ -104,11 +105,11 @@ const adminNavigation: NavSection[] = [
                 href: '/dashboard/reviews',
                 icon: Search,
             },
-            {
-                title: 'Review Stats',
-                href: '/dashboard/reviews/stats',
-                icon: BarChart3,
-            },
+            // {
+            //     title: 'Review Stats',
+            //     href: '/dashboard/reviews/stats',
+            //     icon: BarChart3,
+            // },
         ],
     },
     {
@@ -308,7 +309,9 @@ export function Sidebar({ userRole, collapsed, setCollapsed }: SidebarProps) {
                             )}
                             <div className="space-y-1">
                                 {section.items.map((item) => {
-                                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                                    const isActive =
+                                        pathname === item.href ||
+                                        (item.exactMatch === false && pathname.startsWith(item.href + '/'));
                                     const Icon = item.icon;
 
                                     return (
