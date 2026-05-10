@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import Link from "next/link";
 import {
     Navbar,
@@ -29,7 +29,7 @@ export default function PublicNavbar() {
                     href="/"
                     className="relative z-20 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
                 >
-                    <span className="text-2xl">💀</span>
+                    <Image src="/logo.png" alt="Curate-LLM" width={32} height={32} />
                     <span className="font-bold text-black dark:text-white">
                         Curate-LLM
                     </span>
@@ -51,7 +51,7 @@ export default function PublicNavbar() {
                         href="/"
                         className="flex items-center space-x-2 text-sm font-normal text-black"
                     >
-                        <span className="text-2xl">💀</span>
+                        <Image src="/logo.png" alt="Curate-LLM" width={32} height={32} />
                         <span className="font-bold text-black dark:text-white">
                             Curate-LLM
                         </span>

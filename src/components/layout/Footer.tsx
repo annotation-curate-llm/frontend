@@ -1,5 +1,5 @@
 'use client';
-
+import Image from "next/image";
 import Link from "next/link";
 import { Github, Mail } from "lucide-react";
 
@@ -19,7 +19,7 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="space-y-4 max-w-xs">
                         <Link href="/" className="flex items-center space-x-2">
-                            <span className="text-3xl">💀</span>
+                            <Image src="/logo.png" alt="Curate-LLM" width={32} height={32} />
                             <span className="text-xl font-bold text-gradient-orange-deep">
                                 Curate-LLM
                             </span>

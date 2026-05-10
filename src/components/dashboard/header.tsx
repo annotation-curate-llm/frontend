@@ -1,6 +1,5 @@
 'use client';
-
-import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight, LogOut, User as UserIcon, Settings as SettingsIcon } from 'lucide-react';
@@ -65,8 +64,8 @@ export function Header({ user, onSignOut }: HeaderProps) {
                     <MobileMenu userRole={user.role} />
 
                     <Link href="/" className="flex items-center gap-3 shrink-0 group">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-orange flex items-center justify-center shadow-glow-orange">
-                            <span className="text-white font-bold text-lg">💀</span>
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-glow-orange">
+                            <Image src="/logo.png" alt="Curate-LLM" width={32} height={32} />
                         </div>
                         <span className="text-lg font-semibold text-text-primary hidden lg:block group-hover:text-primary transition-colors">
                             Curate-LLM
