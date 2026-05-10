@@ -65,7 +65,13 @@ export function MobileMenu({ userRole }: MobileMenuProps) {
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 )}
             >
-                <Sidebar userRole={userRole} collapsed={collapsed} setCollapsed={setCollapsed} />
+                <Sidebar
+                    userRole={userRole}
+                    collapsed={collapsed}
+                    setCollapsed={setCollapsed}
+                    showCollapseButton={false}
+                    isMobile={true}
+                />
             </div>
         </>
     );

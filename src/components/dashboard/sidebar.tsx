@@ -10,7 +10,6 @@ import {
     Plus,
     CheckSquare,
     Users,
-    UserCog,
     Search,
     BarChart3,
     Upload,
@@ -43,6 +42,8 @@ interface SidebarProps {
     userRole: UserRole;
     collapsed: boolean;
     setCollapsed: (collapsed: boolean) => void;
+    showCollapseButton?: boolean;
+    isMobile?: boolean;
 }
 
 const adminNavigation: NavSection[] = [
@@ -62,7 +63,7 @@ const adminNavigation: NavSection[] = [
                 title: 'All Projects',
                 href: '/dashboard/projects',
                 icon: FolderOpen,
-                exactMatch: false,
+                exactMatch: true,
             },
             {
                 title: 'Create Project',
@@ -237,6 +238,7 @@ const reviewerNavigation: NavSection[] = [
                 title: 'All Projects',
                 href: '/dashboard/projects',
                 icon: FolderOpen,
+                exactMatch: true,
             },
         ],
     },
@@ -273,29 +275,32 @@ const navigationByRole: Record<UserRole, NavSection[]> = {
     [UserRole.REVIEWER]: reviewerNavigation,
 };
 
-export function Sidebar({ userRole, collapsed, setCollapsed }: SidebarProps) {
+export function Sidebar({ userRole, collapsed, setCollapsed, showCollapseButton, isMobile }: SidebarProps) {
     const pathname = usePathname();
     const navigation = navigationByRole[userRole];
 
     return (
         <aside
             className={cn(
-                'fixed left-0 top-16 h-[calc(100vh-4rem)] bg-bg-secondary border-r border-border-subtle transition-all duration-300 z-40',
+                'h-full bg-bg-secondary border-r border-border-subtle transition-all duration-300',
+                !isMobile && 'fixed left-0 top-16 h-[calc(100vh-4rem)] z-40',
                 collapsed ? 'w-16' : 'w-60'
             )}
         >
             {/* Collapse Toggle */}
-            <button
-                onClick={() => setCollapsed(!collapsed)}
-                className="absolute -right-3 top-6 w-6 h-6 rounded-full bg-bg-secondary border border-border-subtle flex items-center justify-center hover:bg-bg-tertiary transition-colors"
-                aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-                {collapsed ? (
-                    <ChevronRight className="w-3 h-3 text-text-secondary" />
-                ) : (
-                    <ChevronLeft className="w-3 h-3 text-text-secondary" />
-                )}
-            </button>
+            {showCollapseButton && (
+                <button
+                    onClick={() => setCollapsed(!collapsed)}
+                    className="absolute -right-3 top-6 w-6 h-6 rounded-full bg-bg-secondary border border-border-subtle flex items-center justify-center hover:bg-bg-tertiary transition-colors"
+                    aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                    {collapsed ? (
+                        <ChevronRight className="w-3 h-3 text-text-secondary" />
+                    ) : (
+                        <ChevronLeft className="w-3 h-3 text-text-secondary" />
+                    )}
+                </button>
+            )}
 
             {/* Navigation */}
             <nav className="h-full overflow-y-auto py-6 px-3">

@@ -40,14 +40,15 @@ export function DashboardLayout({
                 />
 
                 {/* Sidebar */}
-                <Sidebar userRole={user.role} collapsed={collapsed} setCollapsed={setCollapsed} />
+                <div className="hidden lg:block">
+                    <Sidebar userRole={user.role} collapsed={collapsed} setCollapsed={setCollapsed} />
+                </div>
 
                 {/* Main Content - Adjusts based on sidebar state */}
                 <main
                     className={cn(
                         'pt-16 min-h-screen transition-all duration-300',
                         collapsed ? 'lg:pl-16' : 'lg:pl-60',
-                        'md:pl-0'
                     )}
                 >
                     <div className="p-6 lg:p-8">
