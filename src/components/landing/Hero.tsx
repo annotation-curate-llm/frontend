@@ -36,11 +36,11 @@ export default function Hero() {
                             Get started free →
                         </Link>
                         <Link
-                            href="/demo"
+                            href="#howItWorks"
                             className="inline-flex items-center gap-2 px-6 py-3.5 text-sm text-(--color-text-secondary) border border-(--color-border-subtle) hover:border-(--color-border-default) hover:text-(--color-text-primary) transition-all duration-200"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                            Watch demo
+                            How It Works
                         </Link>
                     </div>
                 </div>

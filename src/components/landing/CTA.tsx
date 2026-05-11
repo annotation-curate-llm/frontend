@@ -53,13 +53,13 @@ export default function CTA() {
                             Get started free <span>→</span>
                         </Link>
                         <Link
-                            href="/demo"
+                            href="#howItWorks"
                             className="flex items-center justify-center gap-2 px-7 py-4 text-sm text(--color-text-secondary) border border-(--color-border-subtle) hover:border-[var(--color-border-default) hover:text-(--color-text-primary) transition-all duration-200 w-full"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M8 5v14l11-7z" />
                             </svg>
-                            Watch the demo
+                            How It Works
                         </Link>
                     </div>
 

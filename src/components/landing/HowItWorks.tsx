@@ -10,7 +10,7 @@ const steps = [
 
 export default function HowItWorks() {
     return (
-        <section className="px-6 py-16 md:px-14 md:py-20 border-b border-(--color-border-subtle) bg-(--color-bg-primary)">
+        <section className="px-6 py-16 md:px-14 md:py-20 border-b border-(--color-border-subtle) bg-(--color-bg-primary)" id="howItWorks">
 
             {/* ── Header ── */}
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-16 md:mb-20">

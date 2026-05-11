@@ -76,11 +76,6 @@ const adminNavigation: NavSection[] = [
         title: 'TASKS',
         items: [
             {
-                title: 'All Tasks',
-                href: '/dashboard/tasks',
-                icon: CheckSquare,
-            },
-            {
                 title: 'Assign Tasks',
                 href: '/dashboard/tasks/assign',
                 icon: Users,
@@ -174,31 +169,31 @@ const annotatorNavigation: NavSection[] = [
             },
         ],
     },
-    {
-        title: 'STATISTICS',
-        items: [
-            {
-                title: 'My Stats',
-                href: '/dashboard/stats',
-                icon: BarChart3,
-            },
-        ],
-    },
-    {
-        title: 'HELP',
-        items: [
-            {
-                title: 'Guidelines',
-                href: '/dashboard/help/guidelines',
-                icon: BookOpen,
-            },
-            {
-                title: 'Support',
-                href: '/dashboard/help/support',
-                icon: MessageCircle,
-            },
-        ],
-    },
+    // {
+    //     title: 'STATISTICS',
+    //     items: [
+    //         {
+    //             title: 'My Stats',
+    //             href: '/dashboard/stats',
+    //             icon: BarChart3,
+    //         },
+    //     ],
+    // },
+    // {
+    //     title: 'HELP',
+    //     items: [
+    //         {
+    //             title: 'Guidelines',
+    //             href: '/dashboard/help/guidelines',
+    //             icon: BookOpen,
+    //         },
+    //         {
+    //             title: 'Support',
+    //             href: '/dashboard/help/support',
+    //             icon: MessageCircle,
+    //         },
+    //     ],
+    // },
 ];
 
 const reviewerNavigation: NavSection[] = [
